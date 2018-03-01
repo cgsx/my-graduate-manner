@@ -2,21 +2,19 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import login from '@/components/login/login'
-import resetPassword from '@/components/login/resetPassword'
+// import index from '@/components/index/index'
+import product from '@/components/product/product'
+import solutions from '@/components/solutions/solution'
+import example from '@/components/example/example'
+import datareport from '@/components/datareport/datareport'
+import sendmsg from '@/components/sendmsg/sendmsg'
+import aboutus from '@/components/aboutus/aboutus'
+import team from '@/components/team/team'
+import commit from '@/components/commit/commit'
+import dynamics from '@/components/dynamics/dynamics'
+import joinus from '@/components/joinus/joinus'
+import contach from '@/components/contach/contach'
 
-import register from '@/components/login/register'
-import APImanagement from '@/components/APImanagement/APImanagement'
-import Solution from '@/components/Solution/Solution'
-import projectmanage from '@/components/projectmanage/projectmanage'
-import Spacemanage from '@/components/Spacemanage/Spacemanage'
-import Membermanage from '@/components/Membermanage/Membermanage'
-import Permissionmanage from '@/components/Permissionmanage/Permissionmanage'
-import Permission from '@/components/Permission/Permission'
-import sortmanage from '@/components/sortmanage/sortmanage'
-
-import Advertisement from '@/components/Advertisement/Advertisement'
-import Advertisinglist from '@/components/Advertisement/Advertisinglist'
-import Newlyadded from '@/components/Advertisement/Newlyadded'
 
 Vue.use(Router)
 
@@ -31,74 +29,65 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: login
-    },
-    {
+    },{
       path: '/',
-      name: 'APImanagement',
-      component: APImanagement
+      name: 'product',
+      component: product
     },
     {
-      path: '/Solution',
-      name: 'Solution',
-      component: Solution
+      path: '/example',
+      name: 'example',
+      component: example
     },
     {
-      path: '/register',
-      name: 'register',
-      component: register
+      path: '/solutions',
+      name: 'solutions',
+      component: solutions
     },
     {
-      path: '/resetPassword',
-      name: 'resetPassword',
-      component: resetPassword
+      path: '/datareport',
+      name: 'datareport',
+      component: datareport
+    },
+     {
+      path: '/sendmsg',
+      name: 'sendmsg',
+      component: sendmsg
+    },
+     {
+      path: '/aboutus',
+      name: 'aboutus',
+      component: aboutus
+    },
+     {
+      path: '/team',
+      name: 'team',
+      component: team
+    },
+     {
+      path: '/commit',
+      name: 'commit',
+      component: commit
     },
     {
-      path: '/projectmanage',
-      name: 'projectmanage',
-      component: projectmanage
+      path: '/dynamics',
+      name: 'dynamics',
+      component: dynamics
+    },
+   {
+      path: '/joinus',
+      name: 'joinus',
+      component: joinus
+    },
+   {
+      path: '/contach',
+      name: 'contach',
+      component: contach
     },
     {
-      path: '/Spacemanage',
-      name: 'Spacemanage',
-      component: Spacemanage
+      path: '*',
+
+      component: product
     },
-    {
-        path: '/Advertisement',
-      name: 'Advertisement',
-      component: Advertisement
-    },
-    {
-      path: '/Advertisinglist',
-      name: 'Advertisinglist',
-      component: Advertisinglist
-    },
-    {
-      path: '/Newlyadded',
-      name: 'Newlyadded',
-      component: Newlyadded
-    },
-    {
-      path: '/Membermanage',
-      name: 'Membermanage',
-      component: Membermanage
-    },
-    {
-      path: '/Permissionmanage',
-      name: 'Permissionmanage',
-      component: Permissionmanage
-    },
-    {
-      path: '/Permission',
-      name: 'Permission',
-      component: Permission
-    },
-    {
-      path: '/sortmanage',
-      name: 'sortmanage',
-      component: sortmanage
-    },
-    {
-      path:'*',redirect:'/APImanagement'
-    }
   ]
 })

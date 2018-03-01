@@ -15,12 +15,12 @@
               <i class="iconfont icon-fangdajing1" style="top: .5px"></i>
               <input type="text" placeholder="请输入关键字" v-model="advertName">
           </span>
-        </Col>
-      </Row>
-      <div class="apiManaeListContainer advert">
-        <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in advertList" :key="item.uuid">
-          <Col span="2">
-          <span class="ciclr ">
+          </Col>
+        </Row>
+        <div class="apiManaeListContainer advert">
+          <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in advertList" :key="item.uuid">
+            <Col span="2">
+            <span class="ciclr ">
                        <img  :src="'cnct_im/common/showImage?fileId='+item.upLoadId" v-show="item.upLoadId!=null">
             <img src="../../assets/image/yzmpic.jpg" alt="" v-show="item.upLoadId==null">
             </span>
@@ -78,51 +78,11 @@
       }
     },
     mounted(){
-      this.loadAdvert();
     },
     methods: {
-        //删除当前广告
-      delAdvert(uuid){
-          var self=this;
-          self.$Modal.confirm({title:'确认',content:'一旦删除将无法恢复，是否确认删除？',okText:'确认删除',cancelText:'取消',onOk:function () {
-            self.$http.post("/advertisement/insertOrUpdate",{uuid:uuid,valid:'N'}).then((m) => {
-              if (m.data.code != 100) {
-                self.$Message.error(m.data.msg);
-                return false;
-              }
-              self.$Message.info(m.data.msg);
-              self.loadAdvert();
-            }).catch(function () {
-              self.$Message.error('请求失败！');
-            })
-          },onCancel:function () {
-            self.$Message.info("取消");
-          }})
 
-      },
-      //跳转到更新页面
-      jumpToUpdate(data){
-        var self = this;
-        self.$router.push({name: "Newlyadded"});
-        sessionStorage.setItem("data", data);
-//        self.$emit('Advertisinglist', false)
 
-      },
-      //广告加载
-      loadAdvert(){
-        var self = this;
-        self.$http.get("/advertisement/list?currentPage=" + self.currentPage + '&name=' + self.advertName).then((m) => {
-          if (m.data.code != 100) {
-            self.$Message.error(m.data.msg);
-            return false;
-          }
-          self.advertList = m.data.data.list;
-          self.PageTotal = m.data.data.total;
-          self.pageSize = m.data.data.pageSize;
-        }).catch(function () {
-          self.$Message.error('请求失败！');
-        })
-      },
+
       change: function (page) {
         var self = this;
         self.currentPage = page;
@@ -158,7 +118,7 @@
     margin-left: 20px;
   }
 
-.advert  .ciclr {
+  .advert  .ciclr {
     display: inline-block;
     width: 100px;
     height: 60px;

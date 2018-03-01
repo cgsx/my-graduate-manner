@@ -3,7 +3,7 @@
     <div>
       <Row >
         <Col span="4" class="left_item text-center">
-        <span class="fontWeight">T</span>统一受理云平台管理
+        <span class="fontWeight">T</span>乐彩云后台管理系统
         </Col>
         <Col span="20" class="right_item">
         <Row>
@@ -31,42 +31,43 @@
            style="position:absolute;top:50px;bottom:0;left:0;right:0;overflow:hidden;align-items:stretch">
         <Col span="4" class="left_item_content "  v-show="!login">
         <Menu :theme="theme3" :active-name="activeName" style="width: 100%;" @on-select="Jump" class="minMenu">
-          <MenuItem name="APImanagement">
+          <MenuItem name="product">
             <i class="iconfont icon-xiangmu"></i>
-            API管理
+            产品管理
           </MenuItem>
           <!--<MenuItem name="Solution">-->
             <!--<i class="iconfont icon-jiejuefangan"></i>-->
             <!--解决方案管理-->
           <!--</MenuItem>-->
-          <MenuItem name="projectmanage">
+          <MenuItem name="solution">
             <i class="iconfont icon-xiangmuguanli"></i>
-            项目管理
+            解决方案管理
           </MenuItem>
-          <MenuItem name="Spacemanage">
+          <MenuItem name="example">
             <i class="iconfont icon-kongjianguanli"></i>
-            空间管理
+            案例管理
           </MenuItem>
-          <MenuItem name="Advertisinglist">
+          <MenuItem name="datareport">
             <i class="iconfont icon-guanggaoguanli"></i>
-            广告管理
+            数据报告管理
           </MenuItem>
-          <MenuItem name="Membermanage">
+          <MenuItem name="sendmsg">
             <i class="iconfont icon-yonghuguanli"></i>
-            成员管理
+            留言管理
           </MenuItem>
-          <MenuItem name="Permissionmanage">
-            <i class="iconfont icon-yuanququanxian"></i>
-            角色权限管理
-          </MenuItem>
-          <MenuItem name="Permission">
-            <i class="iconfont icon-Paas_icon-"></i>
-            权限管理
-          </MenuItem>
-          <MenuItem name="sortmanage">
-            <i class="iconfont icon-xiangmu2"></i>
-            分类管理
-          </MenuItem>
+          <Submenu name="3">
+            <template slot="title">
+              <Icon type="stats-bars"></Icon>
+              关于我们管理
+            </template>
+              <MenuItem name="aboutus">企业信息管理</MenuItem>
+              <MenuItem name="team">团队管理</MenuItem>
+              <MenuItem name="commit">委员会管理</MenuItem>
+              <MenuItem name="dynamics">动态管理</MenuItem>
+              <MenuItem name="joinus">加入我们管理</MenuItem>
+              <MenuItem name="contach">联系我们管理</MenuItem>
+
+          </Submenu>
         </Menu>
         </Col>
         <Col :span="login?24:20">
@@ -88,7 +89,7 @@
     data () {
       return {
         theme3: 'dark',
-        activeName: 'APImanagement',
+        activeName: 'product',
         login: false,
         realname:'',
       }
@@ -101,7 +102,7 @@
         let router = self.$router.currentRoute;
         self.realname=localStorage.getItem('realname');
         if(router.name == 'login' || router.name == 'register' ||router.name == 'resetPassword' ){
-          self.activeName = 'APImanagement';
+          self.activeName = 'product';
           self.login = true;
         }else{
           self.activeName = router.name =='Newlyadded'?'Advertisinglist': router.name;
@@ -119,23 +120,23 @@
       },
       doLogout(){
         let self = this;
-        self.$http.get("/sso/logout").then((m) => {
-          if (m.data.code != 100) {
-            self.$Message.error(m.data.msg);
-            return false;
-          }
-          self.$Message.success({
-            content: m.data.msg,
-            onClose: function () {
-              self.activeName = 'APImanagement';
-              localStorage.clear();
-              location.reload();
-              self.$router.push({path:'/Login'});
-            }
-          });
-        }).catch(function () {
-          self.$Message.error("请求失败！")
-        })
+//        self.$http.get("/sso/logout").then((m) => {
+//          if (m.data.code != 100) {
+//            self.$Message.error(m.data.msg);
+//            return false;
+//          }
+//          self.$Message.success({
+//            content: m.data.msg,
+//            onClose: function () {
+//              self.activeName = 'APImanagement';
+//              localStorage.clear();
+//              location.reload();
+//              self.$router.push({path:'/Login'});
+//            }
+//          });
+//        }).catch(function () {
+//          self.$Message.error("请求失败！")
+//        })
       },
       Jump (name) {
         this.$router.push({name: name});
@@ -156,7 +157,10 @@
     color: #1CB394 !important;
     border-right: 2px solid #1CB394 !important;
   }
-
+ .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active:hover{
+    color: #1CB394 !important;
+background: #313645 !important;
+  }
   .left_item_content {
     background: #495060;
     overflow: auto;

@@ -3,7 +3,7 @@
     <div class="content-wrap ">
       <div class="logo text-center">
         <span>T</span>
-        <h2>统一受理管理平台</h2>
+        <h2>乐彩云后台管理系统</h2>
       </div>
       <form class="lb-input">
         <div class="username-box mb15">
@@ -27,23 +27,12 @@
           <Tooltip class="tips nullTest" content="验证码不能为空" placement="right" :always="true"
                    :class="{hidden:tool.vcode}"></Tooltip>
         </div>
-        <div class="clearfix">
-          <div class="pull-left ">
-            <Checkbox v-model="single">记住密码？</Checkbox>
-          </div>
-          <router-link to="/resetPassword">
-            <div class="pull-right mt5 cursor">忘记密码？</div>
-          </router-link>
-        </div>
+
 
         <Button type="primary" style="width: 100%;margin-top: 10px;height:50px;font-size: 20px;" @click="doLogin()">登录</Button>
 
       </form>
-        <div class="center noregister">没有账号？
-          <router-link to="/register">
-            <a href="javascript:;" >去注册</a>
-          </router-link>
-        </div>
+
     </div>
   </div>
 </template>
@@ -111,28 +100,11 @@
         return true;
       },
       imageChange(){
-        this.imageSrc = 'cnct_im/common/img?target=login&timestamp=' + (new Date()).getTime();
       },
       doLogin(){
         if (this.check()) {
           let self = this;
-          self.$http.post("/sso/dologin", this.dologin,this.evo).then((m) => {
-            self.imageChange();
-            if (m.data.code != 100) {
-              self.$Message.error(m.data.msg);
-              return false;
-            }
-            self.$Message.success({
-              content: m.data.msg,
-              onClose: function () {
-                self.$router.push({path: '/'});
-                localStorage.setItem('realname', m.data.data.realname);
-              }
-            });
-          }).catch(function () {
-            self.imageChange();
-            self.$Message.error("请求失败！");
-          })
+
         }
       },
     }
