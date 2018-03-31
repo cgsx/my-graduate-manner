@@ -27,10 +27,10 @@
         </Row>
         </Col>
       </Row>
-      <Row type="flex" justify="center" align="top" class="code-row-bg"
+      <Row type="flex" justify="center" align="top" class="code-row-bg minMenu"
            style="position:absolute;top:50px;bottom:0;left:0;right:0;overflow:hidden;align-items:stretch">
         <Col span="4" class="left_item_content "  v-show="!login">
-        <Menu :theme="theme3" :active-name="activeName" style="width: 100%;" @on-select="Jump" class="minMenu">
+        <Menu :theme="theme3" :active-name="activeName" style="width: 100%;" @on-select="Jump" >
           <MenuItem name="product">
             <i class="iconfont icon-xiangmu"></i>
             产品管理
@@ -39,7 +39,7 @@
             <!--<i class="iconfont icon-jiejuefangan"></i>-->
             <!--解决方案管理-->
           <!--</MenuItem>-->
-          <MenuItem name="solution">
+          <MenuItem name="solutions">
             <i class="iconfont icon-xiangmuguanli"></i>
             解决方案管理
           </MenuItem>
@@ -55,7 +55,7 @@
             <i class="iconfont icon-yonghuguanli"></i>
             留言管理
           </MenuItem>
-          <Submenu name="3">
+          <Submenu name="3" >
             <template slot="title">
               <Icon type="stats-bars"></Icon>
               关于我们管理
@@ -157,10 +157,11 @@
     color: #1CB394 !important;
     border-right: 2px solid #1CB394 !important;
   }
- .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active:hover{
+  .minMenu .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active, .minMenu .ivu-menu-dark.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active:hover{
     color: #1CB394 !important;
 background: #313645 !important;
   }
+
   .left_item_content {
     background: #495060;
     overflow: auto;

@@ -2,7 +2,7 @@
   <div>
     <Row class="right_item" style="line-height: 50px;background: #FCFCFC;">
       <Col span="4" class="right_item_api">
-      <span class="fontWeight">广告管理</span>
+      <span class="fontWeight">案例管理</span>
       </Col>
     </Row>
     <Row class="apiManage" style="height:100%">
