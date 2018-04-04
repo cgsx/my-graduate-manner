@@ -11,12 +11,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/cnct_im': {
-        // target:  'http://192.168.1.123:8000',
-        target:  'http://192.168.1.133:8000',
+      '/my_graduate': {
+        target: 'http://127.0.0.1:8080/',
         changeOrigin: true,
         pathRewrite: {
-          '^/cnct_im': 'cnct_im'
+          '^/my_graduate': 'my_graduate'
         }
       }
     },

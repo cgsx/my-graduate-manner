@@ -9,7 +9,7 @@ import qs from 'qs';
 import axios from 'axios'
 import router from '../../router'
 axios.defaults.timeout = 60000;
-axios.defaults.baseURL = "cnct_im";
+axios.defaults.baseURL = "my_graduate";
 axios.defaults.headers.get['Content-Type']='application/json;charset=utf-8';
 axios.defaults.headers.post['Content-Type']='application/x-www-form-urlencoded;charset=utf-8';
 // http请求拦截器
