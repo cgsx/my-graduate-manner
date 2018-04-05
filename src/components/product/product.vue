@@ -11,7 +11,7 @@
         <Row class="apiManage_one">
           <Col span="24" >
           <span class="cursor titles " :class="{titlesActive:item.active}" @click="showGroup(item.name)" v-for="(item,key) in groupList" :key="item.name">{{item.name}}</span>
-          <span class="fr"> <Button type="ghost">添加产品</Button></span>
+          <span class="fr cursor" @click="openInsert"> <Button type="ghost" >添加产品</Button></span>
           </Col>
         </Row>
         <div class="apiManaeListContainer advert">
@@ -39,6 +39,7 @@
 
                 </DropdownMenu>
               </Dropdown>
+              <span class="cursor" @click="openInsertGs(item.uuid)" v-if="item.deslist==0"><i class="iconfont icon-jia"></i></span>
             </i-col>
             <i-col span="4">
 
@@ -52,6 +53,7 @@
 
                 </DropdownMenu>
               </Dropdown>
+              <span class="cursor" @click="openInsertGn(item.uuid)" ><i class="iconfont icon-jia"></i></span>
             </i-col>
             <i-col span="4">
 
@@ -65,6 +67,8 @@
 
                 </DropdownMenu>
               </Dropdown>
+              <span class="cursor" @click="openInsertYs(item.uuid)"><i class="iconfont icon-jia"></i></span>
+
             </i-col>
             <i-col span="4">
 
@@ -78,6 +82,8 @@
 
                 </DropdownMenu>
               </Dropdown>
+              <span class="cursor" @click="openInsertCj(item.uuid)"><i class="iconfont icon-jia"></i></span>
+
             </i-col>
             <Col span="4" class=" text-right cursor">
             <span class="mr10" @click="openUpdate(item)">更改</span>
@@ -124,7 +130,7 @@
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-      <FormItem label="副标题"v-if="formItem.pro_in=='产品功能'||formItem.pro_in=='产品优势'||formItem.pro_in=='应用场景'">
+      <FormItem label="副标题" v-if="formItem.pro_in=='产品功能'||formItem.pro_in=='产品优势'||formItem.pro_in=='应用场景'">
         <Input v-model="formItem.detailtitle" type="text" placeholder="请输入副标题" ></Input>
       </FormItem>
       <FormItem label="详细内容" v-if="formItem.pro_in=='产品功能'||formItem.pro_in=='产品优势'||formItem.pro_in=='应用场景'">
@@ -137,7 +143,50 @@
         <Button type="primary" @click="updatePro">确定</Button>
       </p>
     </Modal>
-
+    <!--添加产品-->
+    <Modal
+      v-model="modal3"
+      @on-visible-change="closeModal"
+      title="添加"
+    >
+      <p>
+      <Form :model="formItem" :label-width="80">
+        <FormItem label="产品名称"  v-if="insertList.pro_in==''">
+          <Input v-model="insertList.name" placeholder="请输入产品名称" ></Input>
+        </FormItem>
+        <FormItem label="产品描述" v-if="insertList.pro_in==''">
+          <Input v-model="insertList.des" type="textarea" placeholder="请输入产品描述"></Input>
+        </FormItem>
+        <FormItem label="分组" v-if="insertList.pro_in==''">
+          <Input v-model="insertList.group" type="text" placeholder="请输入分组"></Input>
+        </FormItem>
+        <FormItem label="标题" v-if="insertList.pro_in=='产品概述'">
+          <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
+        </FormItem>
+        <FormItem label="产品概述" v-if="insertList.pro_in=='产品概述'">
+          <Input v-model="insertList.detail" type="textarea" placeholder="请输入产品概述" ></Input>
+        </FormItem>
+        <FormItem label="标题" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+          <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
+        </FormItem>
+        <FormItem label="标志"  v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'">
+          <Upload action="">
+            <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+          </Upload>
+        </FormItem>
+        <FormItem label="副标题" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+          <Input v-model="insertList.detailtitle" type="text" placeholder="请输入副标题" ></Input>
+        </FormItem>
+        <FormItem label="详细内容" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+          <Input v-model="insertList.detail" type="text" placeholder="请输入详细内容" ></Input>
+        </FormItem>
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="ghost" @click="modal3=false">取消</Button>
+        <Button type="primary" @click="insertPro">确定</Button>
+      </p>
+    </Modal>
   </div>
 </template>
 
@@ -148,6 +197,7 @@
       return {
         modal1: false,//产品概述
         modal2:false,
+        modal3:false,//添加产品
         proList: [],//产品列表
         proInList:[],
         groupList:[{name:'行业智能决策产品',active:true,uid:1},{name:'智能认知产品',active:false,uid:2},{name:'大数据操作系统',active:false,uid:3}],//分组列表
@@ -156,6 +206,13 @@
         formItem:{
             uuid:'',
             name:'',
+          des:'',
+          group:'',
+          pro_in:''
+        },
+        insertList:{
+          uuid:'',
+          name:'',
           des:'',
           group:'',
           pro_in:''
@@ -169,8 +226,7 @@
     methods: {
       delPro(item){
           var self=this;
-          console.log(item);
-          self.$Modal.confirm({title:'删除',content:"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
+          self.$Modal.confirm({title:'删除','content':"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
             self.$http.post("mg_pro/mg_pro_del.php",{uuid:item}).then((m)=>{
               if(m.data.code!=100){
                 self.$Message.info(m.data.msg);
@@ -198,7 +254,8 @@
           id:item.uuid,
           pro_in:'产品功能'
         };
-      },   openUpdateCj(item){
+      },
+      openUpdateCj(item){
           console.log(item)
         var self=this;
         self.formItem.pro_in='应用场景';
@@ -210,7 +267,8 @@
           id:item.uuid,
           pro_in:'应用场景'
         };
-      },  openUpdateYs(item){
+      },
+      openUpdateYs(item){
         var self=this;
         self.formItem.pro_in='产品优势';
         self.modal1=true;
@@ -235,9 +293,45 @@
         };
 
       },
+      openInsertGs(uuid){
+          var self=this;
+          self.insertList.pro_in='产品概述';
+          console.log(self.insertList);
+self.insertList.uuid=uuid;
+        self.modal3=true;
+      },
+      openInsertGn(uuid){
+          var self=this;
+          self.insertList.pro_in='产品功能';
+        self.modal3=true;
+self.insertList.uuid=uuid;
+      },
+      openInsertCj(uuid){
+          var self=this;
+          self.insertList.pro_in='应用场景';
+        self.modal3=true;
+self.insertList.uuid=uuid;
+      },
+      openInsertYs(uuid){
+          var self=this;
+          self.insertList.pro_in='产品优势';
+        self.modal3=true;
+self.insertList.uuid=uuid;
+      },
         //模态框显示关闭函数
       closeModal(flag){
-          console.log(flag);
+
+          var self=this;
+          if(!flag){
+            self.insertList.name='';
+            self.insertList.des='';
+            self.insertList.group='';
+            self.insertList.title='';
+            self.insertList.detailtitle='';
+            self.insertList.detail='';
+          }
+
+
       },
         //打开修改对话框
       openUpdate(item){
@@ -251,6 +345,10 @@
             des:item.description
           }
 
+      },
+      openInsert(){
+          var self=this;
+          self.modal3=true;
       },
         //展示分组
       showGroup(name){
@@ -274,6 +372,23 @@
             return false;
           }
           self.modal1=false;
+          self.loadPro();
+          self.loadGroup();
+          self.$Message.info(m.data.msg);
+        }).catch(function () {
+          self.$Message.info("请求失败！");
+        })
+      },
+//      添加产品信息
+      insertPro(){
+          var self=this;
+          console.log(self.insertList);
+        self.$http.post("mg_pro/mg_pro_insert.php",self.insertList).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.modal3=false;
           self.loadPro();
           self.loadGroup();
           self.$Message.info(m.data.msg);
