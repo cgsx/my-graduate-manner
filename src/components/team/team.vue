@@ -10,30 +10,48 @@
       <div class="apiManageContainer">
         <Row class="apiManage_one">
           <Col span="10" offset="14" class="text-right">
-          <span class="newAdd cursor" @click="newFunction">新增广告</span>
-          <span class="apiManage_one_input">
-              <i class="iconfont icon-fangdajing1" style="top: .5px"></i>
-              <input type="text" placeholder="请输入关键字" v-model="advertName">
-          </span>
+          <span class="fr cursor" @click="openInsert"> <Button type="ghost" >添加人员</Button></span>
+
           </Col>
         </Row>
         <div class="apiManaeListContainer advert">
           <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in advertList" :key="item.uuid">
             <Col span="2">
             <span class="ciclr ">
-                       <img  :src="'cnct_im/common/showImage?fileId='+item.upLoadId" v-show="item.upLoadId!=null">
-            <img src="../../assets/image/yzmpic.jpg" alt="" v-show="item.upLoadId==null">
+            <img src="../../assets/image/yzmpic.jpg" alt="">
             </span>
             </Col>
-            <Col span="17">
-            <p class="fontWeight ml20 vc">广告名称：{{item.name}}</p>
+            <Col span="7">
+            <p class="fontWeight ml20 vc">姓名：{{item.name}}</p>
             <p>
-              <span class="mar_right ml20 vc">所属栏目：{{item.column}}</span>
+              <span class="mar_right ml20 vc">职务：{{item.dept}}</span>
             </p>
             </Col>
+            <i-col span="9">
+              <p>
+                教育背景：{{item.backdetail}}
+              </p>
+              <p>
+
+                <Dropdown>
+                  <a href="javascript:void(0)">
+                    {{item.workhis}}:
+                    <Icon type="arrow-down-b"></Icon>
+                  </a>
+                  <DropdownMenu slot="list">
+                    <DropdownItem v-for="gs in item.workhisList" :key="gs.uuid" >
+                      <Tooltip  class="tool" :content="gs.des">
+                        {{gs.des|trunc(8)}}
+                      </Tooltip>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </p>
+            </i-col>
+
             <Col span="4" class=" text-right cursor">
-            <span class="mr10" @click="jumpToUpdate(JSON.stringify(item))">更改</span>
-            <span @click="delAdvert(item.uuid)">删除</span>
+            <span class="mr10" @click="openUpdate(item)">更改</span>
+            <span @click="delTeam(item.uuid)">删除</span>
             </Col>
           </Row>
           <Row class="apiManage_two code-row-bg " type="flex" justify="center" align="middle" v-if="advertList==false">
@@ -41,15 +59,65 @@
             暂无数据列表
             </Col>
           </Row>
-          <Row class="apiManage_two code-row-bg test" v-if="PageTotal/pageSize>1" type="flex" justify="center"
-               align="middle">
-            <Col span="24" class="text-center">
-            <Page :total="PageTotal" show-elevator show-total :page-size='pageSize' @on-change="change"></Page>
-            </Col>
-          </Row>
         </div>
       </div>
     </Row>
+    <Modal
+      v-model="modal1"
+
+      title="修改"
+    >
+      <p>
+      <Form :model="formItem" :label-width="80">
+        <FormItem label="姓名"  >
+          <Input v-model="formItem.name" placeholder="请输入姓名" ></Input>
+        </FormItem>
+        <FormItem label="职务">
+          <Input v-model="formItem.dept" type="textarea" placeholder="请输入职务" ></Input>
+        </FormItem>
+        <FormItem label="教育背景">
+          <Input v-model="formItem.backdetail"type="textarea" placeholder="请输入教育背景" ></Input>
+        </FormItem>
+        <FormItem label="工作经历">
+          <Input v-model="formItem.workdes" type="textarea" placeholder="请输入工作经历，每一条经历用逗号 隔开" ></Input>
+        </FormItem>
+
+
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="ghost" @click="modal1=false">取消</Button>
+        <Button type="primary" @click="updateTeam">确定</Button>
+      </p>
+    </Modal>
+    <Modal
+      v-model="modal3"
+
+      title="修改"
+    >
+      <p>
+      <Form :model="insertList" :label-width="80">
+        <FormItem label="姓名"  >
+          <Input v-model="insertList.name" placeholder="请输入姓名" ></Input>
+        </FormItem>
+        <FormItem label="职务">
+          <Input v-model="insertList.dept" type="textarea" placeholder="请输入职务" ></Input>
+        </FormItem>
+        <FormItem label="教育背景">
+          <Input v-model="insertList.backdetail"type="textarea" placeholder="请输入教育背景" ></Input>
+        </FormItem>
+        <FormItem label="工作经历">
+          <Input v-model="insertList.workdes" type="textarea" placeholder="请输入工作经历，每一条经历用逗号 隔开" ></Input>
+        </FormItem>
+
+
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="ghost" @click="modal1=false">取消</Button>
+        <Button type="primary" @click="insertTeam">确定</Button>
+      </p>
+    </Modal>
   </div>
 </template>
 
@@ -58,39 +126,88 @@
     name: 'APImanagement',
     data () {
       return {
-        modal1: false,
-        advertList: [],//广告列表列表
-        advertName: '',//搜索框名字
-        currentPage: 1,//当前页码
-        PageTotal: 0,//总条数
-        pageSize: 0,//每页条数
-      }
-    },
-    watch: {
-      advertName: function (old, cur) {//搜索广告名
-        var self = this;
-        setTimeout(function () {
-          if (self.advertName != old) {
-            return false;
-          }
-          self.loadAdvert();
-        }, 500)
+        modal1:false,
+        modal3:false,
+        advertList:[],//广告列表列表
+        formItem:{},
+        insertList:{}
       }
     },
     mounted(){
+        this.loadCompany();
     },
     methods: {
+      openUpdate(item){
+          var self=this;
+          var workdes=[];
+          for(var key of item.workhisList){
+              workdes.push(key.des);
+          }
+          self.modal1=true;
 
-
-
-      change: function (page) {
-        var self = this;
-        self.currentPage = page;
-        self.loadAdvert();
+          self.formItem={
+              uuid:item.uuid,
+              name:item.name,
+            dept:item.dept,
+            backdetail:item.backdetail,
+            workdes:workdes.join(",")
+          }
       },
-      newFunction () {
-        sessionStorage.setItem("data", '');
-        this.$router.push({name: 'Newlyadded'});
+      delTeam(item){
+        var self=this;
+        self.$Modal.confirm({title:'删除','content':"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
+          self.$http.post("mg_manner/mg_manner_del.php",{uuid:item}).then((m)=>{
+            if(m.data.code!=100){
+              self.$Message.info(m.data.msg);
+              return false;
+            }
+            self.$Message.info(m.data.msg);
+            self.loadCompany();
+
+          }).catch(function () {
+            self.$Message.info("请求失败！");
+          })
+        },onCancel(){
+          self.$Message.info("取消！");
+        }})
+      },
+      updateTeam(){
+        var self=this;
+        self.$http.post("mg_manner/mg_manner_update.php",self.formItem).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+          self.modal1=false;
+          self.loadCompany();
+        })
+      },
+      insertTeam(){
+        var self=this;
+        self.$http.post("mg_manner/mg_manner_insert.php",self.insertList).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+          self.modal3=false;
+          self.loadCompany();
+        })
+      },
+      openInsert(){
+          var self=this;
+      self.modal3=true;
+      },
+      loadCompany() {
+        var self=this;
+        self.$http.post("mg_manner/mg_manner.php").then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.advertList=m.data.data;
+        })
       },
     }
   }

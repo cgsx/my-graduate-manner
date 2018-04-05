@@ -256,7 +256,6 @@
         };
       },
       openUpdateCj(item){
-          console.log(item)
         var self=this;
         self.formItem.pro_in='应用场景';
         self.modal1=true;
@@ -296,7 +295,6 @@
       openInsertGs(uuid){
           var self=this;
           self.insertList.pro_in='产品概述';
-          console.log(self.insertList);
 self.insertList.uuid=uuid;
         self.modal3=true;
       },
@@ -365,7 +363,6 @@ self.insertList.uuid=uuid;
 //      修改产品信息
       updatePro(){
           var self=this;
-          console.log(self.formItem);
         self.$http.post("mg_pro/mg_pro_update.php",self.formItem).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);
@@ -382,7 +379,6 @@ self.insertList.uuid=uuid;
 //      添加产品信息
       insertPro(){
           var self=this;
-          console.log(self.insertList);
         self.$http.post("mg_pro/mg_pro_insert.php",self.insertList).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);

@@ -55,6 +55,10 @@
             <i class="iconfont icon-yonghuguanli"></i>
             留言管理
           </MenuItem>
+          <MenuItem name="joinus">
+            <i class="iconfont icon-yonghuguanli"></i>
+            咨询管理
+          </MenuItem>
           <Submenu name="3" >
             <template slot="title">
               <Icon type="stats-bars"></Icon>
@@ -62,11 +66,7 @@
             </template>
               <MenuItem name="aboutus">企业信息管理</MenuItem>
               <MenuItem name="team">团队管理</MenuItem>
-              <MenuItem name="commit">委员会管理</MenuItem>
               <MenuItem name="dynamics">动态管理</MenuItem>
-              <MenuItem name="joinus">加入我们管理</MenuItem>
-              <MenuItem name="contach">联系我们管理</MenuItem>
-
           </Submenu>
         </Menu>
         </Col>

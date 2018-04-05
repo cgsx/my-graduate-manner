@@ -10,11 +10,7 @@
       <div class="apiManageContainer">
         <Row class="apiManage_one">
           <Col span="10" offset="14" class="text-right">
-          <span class="newAdd cursor" @click="newFunction">新增广告</span>
-          <span class="apiManage_one_input">
-              <i class="iconfont icon-fangdajing1" style="top: .5px"></i>
-              <input type="text" placeholder="请输入关键字" v-model="advertName">
-          </span>
+          <span class="fr cursor" @click="openInsert"> <Button type="ghost" >添加动态</Button></span>
           </Col>
         </Row>
         <div class="apiManaeListContainer advert">
@@ -26,14 +22,14 @@
             </span>
             </Col>
             <Col span="17">
-            <p class="fontWeight ml20 vc">广告名称：{{item.name}}</p>
+            <p class="fontWeight ml20 vc">标题：{{item.title}}</p>
             <p>
-              <span class="mar_right ml20 vc">所属栏目：{{item.column}}</span>
+              <span class="mar_right ml20 vc">时间：{{item.time}}</span>
             </p>
             </Col>
             <Col span="4" class=" text-right cursor">
-            <span class="mr10" @click="jumpToUpdate(JSON.stringify(item))">更改</span>
-            <span @click="delAdvert(item.uuid)">删除</span>
+            <span class="mr10" @click="openUpdate(item)">更改</span>
+            <span @click="delTeam(item.uuid)">删除</span>
             </Col>
           </Row>
           <Row class="apiManage_two code-row-bg " type="flex" justify="center" align="middle" v-if="advertList==false">
@@ -41,15 +37,51 @@
             暂无数据列表
             </Col>
           </Row>
-          <Row class="apiManage_two code-row-bg test" v-if="PageTotal/pageSize>1" type="flex" justify="center"
-               align="middle">
-            <Col span="24" class="text-center">
-            <Page :total="PageTotal" show-elevator show-total :page-size='pageSize' @on-change="change"></Page>
-            </Col>
-          </Row>
+
         </div>
       </div>
     </Row>
+    <Modal
+      v-model="modal1"
+
+      title="修改"
+    >
+      <p>
+      <Form :model="formItem" :label-width="80">
+        <FormItem label="标题"  >
+          <Input v-model="formItem.title" placeholder="请输入标题" ></Input>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="formItem.des" type="textarea" placeholder="请输入描述" ></Input>
+        </FormItem>
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="ghost" @click="modal1=false">取消</Button>
+        <Button type="primary" @click="updateTeam">确定</Button>
+      </p>
+    </Modal>
+
+    <Modal
+      v-model="modal3"
+
+      title="修改"
+    >
+      <p>
+      <Form :model="insertList" :label-width="80">
+      <FormItem label="标题"  >
+        <Input v-model="insertList.title" placeholder="请输入标题" ></Input>
+      </FormItem>
+      <FormItem label="描述">
+        <Input v-model="insertList.des" type="textarea" placeholder="请输入描述" ></Input>
+      </FormItem>
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="ghost" @click="modal1=false">取消</Button>
+        <Button type="primary" @click="insertTeam">确定</Button>
+      </p>
+    </Modal>
   </div>
 </template>
 
@@ -59,143 +91,87 @@
     data () {
       return {
         modal1: false,
+        modal3:false,
         advertList: [],//广告列表列表
-        advertName: '',//搜索框名字
-        currentPage: 1,//当前页码
-        PageTotal: 0,//总条数
-        pageSize: 0,//每页条数
+        formItem:{},
+        insertList:{}
       }
     },
-    watch: {
-      advertName: function (old, cur) {//搜索广告名
-        var self = this;
-        setTimeout(function () {
-          if (self.advertName != old) {
-            return false;
-          }
-          self.loadAdvert();
-        }, 500)
-      }
-    },
+
     mounted(){
+        this.loadCompany();
     },
     methods: {
-
-
-
-      change: function (page) {
-        var self = this;
-        self.currentPage = page;
-        self.loadAdvert();
+      openUpdate(item){
+var self=this;
+self.modal1=true;
+        self.formItem={
+          uuid:item.uuid,
+          title:item.title,
+          des:item.description
+        }
       },
-      newFunction () {
-        sessionStorage.setItem("data", '');
-        this.$router.push({name: 'Newlyadded'});
+      delTeam(item){
+        var self=this;
+        self.$Modal.confirm({title:'删除','content':"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
+          self.$http.post("mg_trends/mg_trends_del.php",{uuid:item}).then((m)=>{
+            if(m.data.code!=100){
+              self.$Message.info(m.data.msg);
+              return false;
+            }
+            self.$Message.info(m.data.msg);
+            self.loadCompany();
+
+          }).catch(function () {
+            self.$Message.info("请求失败！");
+          })
+        },onCancel(){
+          self.$Message.info("取消！");
+        }})
       },
+      updateTeam(){
+        var self=this;
+        self.$http.post("mg_trends/mg_trends_update.php",self.formItem).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+          self.modal1=false;
+          self.loadCompany();
+        })
+      },
+      insertTeam(){
+        var self=this;
+        self.$http.post("mg_trends/mg_trends_insert.php",self.insertList).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+          self.modal3=false;
+          self.loadCompany();
+        })
+      },
+      openInsert(){
+        var self=this;
+        self.modal3=true;
+      },
+      loadCompany(){
+   var self=this;
+   self.$http.post("mg_trends/mg_trends.php").then((m)=>{
+     if(m.data.code!=100){
+       self.$Message.info(m.data.msg);
+       return false;
+     }
+     self.advertList=m.data.data;
+   })
+ }
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .newAdd {
-    background: #23D7BC;
-    color: #fff;
-    border-radius: 20px;
-    padding: 7px 17px;
-  }
 
-  .borderContent .border_bottom_position {
-    width: 57%;
-    position: absolute;
-    bottom: 0;
-    left: 22%;
-    display: inline-block;
-    border-bottom: 3px solid #1CB394;
-  }
-
-  .right_item_api {
-    margin-left: 20px;
-  }
-
-  .advert  .ciclr {
-    display: inline-block;
-    width: 100px;
-    height: 60px;
-    overflow: auto;
-  }
-
-  .advert .ciclr img {
-    width: 100%;
-    height: 100%;
-    transition: all 0.6s;
-  }
-
-  .advert .ciclr img:hover {
-    transform: scale(1.4);
-  }
-
-  .right_item {
-    background: #fff;
-    border-bottom: 1px solid #DEDEDE;
-    height: 50px;
-  }
-
-  .left_item span {
-    margin-right: 5px;
-    font-size: 25px;
-    vertical-align: bottom
-  }
-
-  .apiManage_one_choolse i {
-    margin-right: 5px;
-    vertical-align: middle
-  }
-
-  .apiManage_one_input {
-    position: relative;
-  }
-
-  .apiManage_one_input input {
-    width: 45%;
-    height: 30px;
-    padding: 3px 30px 3px 10px;
-    border-radius: 18px;
-    border: 1px solid #DDDEE1;
-  }
-
-  .apiManage_one_input i {
-    position: absolute;
-    right: 8px;
-    color: #808080
-  }
-
-  .apiManage_one {
-    background: #FCFCFC;
-    padding: 10px;
-    padding-left: 20px;
-  }
-
-  .apiManage {
-    padding: 10px;
-  }
-
-  .apiManage_two {
-    vertical-align: middle;
-    background: #fff;
-    padding: 10px 20px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .apiManageContainer {
-    width: 100%;
-    height: 93%;
-    background-color: #fff;
-
-  }
-
-  .test {
-    margin-bottom: 40px;
-    border-bottom: 0;
-  }
 </style>

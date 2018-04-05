@@ -2,7 +2,7 @@
   <div>
     <Row class="right_item" style="line-height: 50px;background: #FCFCFC;">
       <Col span="4" class="right_item_api">
-      <span class="fontWeight">加入我们管理</span>
+      <span class="fontWeight">咨询管理管理</span>
       </Col>
     </Row>
     <Row class="apiManage" style="height:100%">

@@ -101,7 +101,9 @@
 .pull-left {
   float: left;
 }
-
+.tool .ivu-tooltip-inner{
+  white-space: normal;
+}
 .pull-right {
   float: right;
 }

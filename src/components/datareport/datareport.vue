@@ -10,46 +10,117 @@
       <div class="apiManageContainer">
         <Row class="apiManage_one">
           <Col span="10" offset="14" class="text-right">
-          <span class="newAdd cursor" @click="newFunction">新增广告</span>
-          <span class="apiManage_one_input">
-              <i class="iconfont icon-fangdajing1" style="top: .5px"></i>
-              <input type="text" placeholder="请输入关键字" v-model="advertName">
-          </span>
+          <span class="fr" @click="modal3=true"> <Button type="ghost">添加报告</Button></span>
           </Col>
         </Row>
         <div class="apiManaeListContainer advert">
-          <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in advertList" :key="item.uuid">
-            <Col span="2">
-            <span class="ciclr ">
-                       <img  :src="'cnct_im/common/showImage?fileId='+item.upLoadId" v-show="item.upLoadId!=null">
-            <img src="../../assets/image/yzmpic.jpg" alt="" v-show="item.upLoadId==null">
-            </span>
+          <Row>
+            <i-col span="4" class="fontWeight text-center vc ">报告图</i-col>
+            <i-col span="4" class="fontWeight text-center vc ">标题</i-col>
+            <i-col span="4" class="fontWeight text-center vc ">简介</i-col>
+            <i-col span="4" class="fontWeight text-center vc ">数据来源</i-col>
+            <i-col span="4" class="fontWeight text-center vc ">目录</i-col>
+            <i-col span="4" class="fontWeight text-center vc ">修改</i-col>
+          </Row>
+          <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in dataList" :key="item.uuid">
+            <Col span="4">
+            <p class=" ml20 vc imgs" ><img src="../../assets/image/banner1.jpg" /></p>
             </Col>
-            <Col span="17">
-            <p class="fontWeight ml20 vc">广告名称：{{item.name}}</p>
-            <p>
-              <span class="mar_right ml20 vc">所属栏目：{{item.column}}</span>
+            <Col span="4">
+            <p class=" ml20 vc">
+              <Tooltip class="tool" :content="item.title">
+                {{item.title|trunc(8)}}
+              </Tooltip>
+
+            </p>
+            </Col>
+            <Col span="4">
+            <p class=" ml20 vc">
+              <Tooltip  class="tool" :content="item.description">
+                {{item.description|trunc(8)}}
+              </Tooltip>
+            </p>
+            </Col>
+            <Col span="4">
+            <p class=" ml20 vc">
+              <Tooltip  class="tool" :content="item.data_cata">
+                {{item.data_cata|trunc(8)}}
+              </Tooltip>
+              </p>
+            </Col>
+            <Col span="4">
+            <p class=" ml20 vc">
+              <Tooltip  class="tool" :content="item.data_study">
+                {{item.data_study|trunc(8)}}
+              </Tooltip>
+
             </p>
             </Col>
             <Col span="4" class=" text-right cursor">
-            <span class="mr10" @click="jumpToUpdate(JSON.stringify(item))">更改</span>
-            <span @click="delAdvert(item.uuid)">删除</span>
+            <span class="mr10" @click="openUpdate(item)">更改</span>
+            <span @click="delOne(item.uuid)">删除</span>
             </Col>
           </Row>
-          <Row class="apiManage_two code-row-bg " type="flex" justify="center" align="middle" v-if="advertList==false">
+          <Row class="apiManage_two code-row-bg " type="flex" justify="center" align="middle" v-if="dataList==false">
             <Col span="24" class="text-center">
             暂无数据列表
-            </Col>
-          </Row>
-          <Row class="apiManage_two code-row-bg test" v-if="PageTotal/pageSize>1" type="flex" justify="center"
-               align="middle">
-            <Col span="24" class="text-center">
-            <Page :total="PageTotal" show-elevator show-total :page-size='pageSize' @on-change="change"></Page>
             </Col>
           </Row>
         </div>
       </div>
     </Row>
+    <Modal
+      v-model="modal1"
+      title="修改"
+      @on-visible-change="closeModal"
+    >
+      <p>
+      <Form :model="formItem" :label-width="80">
+        <FormItem label="标题">
+          <Input v-model="formItem.title" placeholder="请输入标题"></Input>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="formItem.des" type="textarea" placeholder="请输入描述"></Input>
+        </FormItem>
+        <FormItem label="数据来源">
+          <Input v-model="formItem.datacata" type="textarea" placeholder="请输入数据来源"></Input>
+        </FormItem>
+        <FormItem label="目录">
+          <Input v-model="formItem.datastudy"  type="textarea" placeholder="目录"></Input>
+        </FormItem>
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="primary" @click="updateOne">确定</Button>
+        <Button type="ghost" @click="modal1=false">取消</Button>
+      </p>
+    </Modal>
+    <Modal
+      v-model="modal3"
+      title="新增"
+      @on-visible-change="closeModal"
+    >
+      <p>
+      <Form :model="insertList" :label-width="80">
+        <FormItem label="标题">
+          <Input v-model="insertList.title" placeholder="请输入标题"></Input>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="insertList.des"  type="textarea" placeholder="请输入描述"></Input>
+        </FormItem>
+        <FormItem label="数据来源">
+          <Input v-model="insertList.datacata"  type="textarea" placeholder="请输入数据来源"></Input>
+        </FormItem>
+        <FormItem label="目录">
+          <Input v-model="insertList.datastudy"  type="textarea" placeholder="目录"></Input>
+        </FormItem>
+      </Form>
+      </p>
+      <p slot="footer">
+        <Button type="primary" @click="insertOne">确定</Button>
+        <Button type="ghost" @click="modal3=false">取消</Button>
+      </p>
+    </Modal>
   </div>
 </template>
 
@@ -59,143 +130,109 @@
     data () {
       return {
         modal1: false,
-        advertList: [],//广告列表列表
-        advertName: '',//搜索框名字
-        currentPage: 1,//当前页码
-        PageTotal: 0,//总条数
-        pageSize: 0,//每页条数
+        modal3:false,
+        dataList:[],
+        formItem:{
+          title:'',
+          des:'',
+          datacata:'',
+          datastudy:'',
+        },
+        insertList:{
+          title:'',
+          des:'',
+          datacata:'',
+          datastudy:'',
+        }
       }
     },
-    watch: {
-      advertName: function (old, cur) {//搜索广告名
-        var self = this;
-        setTimeout(function () {
-          if (self.advertName != old) {
-            return false;
-          }
-          self.loadAdvert();
-        }, 500)
-      }
-    },
+
     mounted(){
+        this.loadData();
     },
     methods: {
-
-
-
-      change: function (page) {
-        var self = this;
-        self.currentPage = page;
-        self.loadAdvert();
+      openUpdate(item){
+          this.modal1=true;
+       this.formItem={
+           uuid:item.uuid,
+          title:item.title,
+            des:item.description,
+            datacata:item.data_cata,
+            datastudy:item.data_study,
+        };
       },
-      newFunction () {
-        sessionStorage.setItem("data", '');
-        this.$router.push({name: 'Newlyadded'});
+      updateOne(){
+        var self=this;
+        self.$http.post("mg_data/mg_data_update.php",self.formItem).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+          self.loadData();
+self.modal1=false;
+        })
+      },
+      insertOne(){
+        var self=this;
+        self.$http.post("mg_data/mg_data_insert.php",self.insertList).then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.$Message.info(m.data.msg);
+
+          self.modal3=false;
+    self.loadData();
+
+        })
+      },
+      delOne(item){
+        var self=this;
+        self.$Modal.confirm({title:'删除','content':"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
+          self.$http.post("mg_data/mg_data_del.php",{uuid:item}).then((m)=>{
+            if(m.data.code!=100){
+              self.$Message.info(m.data.msg);
+              return false;
+            }
+            self.$Message.info(m.data.msg);
+            self.loadData();
+
+          }).catch(function () {
+            self.$Message.info("请求失败！");
+          })
+        },onCancel(){
+          self.$Message.info("取消！");
+        }})
+      },
+    closeModal(flag){
+      var self=this;
+      if(!flag){
+      }
+    },
+      loadData () {
+          var self=this;
+        self.$http.post("mg_data/mg_data.php").then((m)=>{
+          if(m.data.code!=100){
+            self.$Message.info(m.data.msg);
+            return false;
+          }
+          self.dataList=m.data.data;
+        })
       },
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .newAdd {
-    background: #23D7BC;
-    color: #fff;
-    border-radius: 20px;
-    padding: 7px 17px;
-  }
-
-  .borderContent .border_bottom_position {
-    width: 57%;
-    position: absolute;
-    bottom: 0;
-    left: 22%;
-    display: inline-block;
-    border-bottom: 3px solid #1CB394;
-  }
-
-  .right_item_api {
-    margin-left: 20px;
-  }
-
-  .advert  .ciclr {
-    display: inline-block;
-    width: 100px;
-    height: 60px;
-    overflow: auto;
-  }
-
-  .advert .ciclr img {
+<style >
+  .imgs{
     width: 100%;
-    height: 100%;
-    transition: all 0.6s;
   }
-
-  .advert .ciclr img:hover {
-    transform: scale(1.4);
-  }
-
-  .right_item {
-    background: #fff;
-    border-bottom: 1px solid #DEDEDE;
-    height: 50px;
-  }
-
-  .left_item span {
-    margin-right: 5px;
-    font-size: 25px;
-    vertical-align: bottom
-  }
-
-  .apiManage_one_choolse i {
-    margin-right: 5px;
-    vertical-align: middle
-  }
-
-  .apiManage_one_input {
-    position: relative;
-  }
-
-  .apiManage_one_input input {
-    width: 45%;
-    height: 30px;
-    padding: 3px 30px 3px 10px;
-    border-radius: 18px;
-    border: 1px solid #DDDEE1;
-  }
-
-  .apiManage_one_input i {
-    position: absolute;
-    right: 8px;
-    color: #808080
-  }
-
-  .apiManage_one {
-    background: #FCFCFC;
-    padding: 10px;
-    padding-left: 20px;
-  }
-
-  .apiManage {
-    padding: 10px;
-  }
-
-  .apiManage_two {
-    vertical-align: middle;
-    background: #fff;
-    padding: 10px 20px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .apiManageContainer {
+  .imgs img{
     width: 100%;
-    height: 93%;
-    background-color: #fff;
-
   }
-
-  .test {
-    margin-bottom: 40px;
-    border-bottom: 0;
+  .tool .ivu-tooltip-inner{
+    white-space: normal;
   }
 </style>
