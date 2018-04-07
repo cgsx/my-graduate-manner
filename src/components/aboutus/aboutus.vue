@@ -102,7 +102,7 @@
       <Input v-model="formItem.content2" type="textarea" placeholder="请输入全球布局详情" ></Input>
     </FormItem>
         <FormItem label="标题3">
-          <Input v-model="formItem.des" type="text" placeholder="请输入标题1"></Input>
+          <Input v-model="formItem.honer" type="text" placeholder="请输入标题1"></Input>
         </FormItem>
 
 

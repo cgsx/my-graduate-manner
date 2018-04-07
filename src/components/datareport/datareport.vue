@@ -24,7 +24,7 @@
           </Row>
           <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in dataList" :key="item.uuid">
             <Col span="4">
-            <p class=" ml20 vc imgs" ><img src="../../assets/image/banner1.jpg" /></p>
+            <p class=" ml20 vc imgs" >        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+item.uuid+'&type=7'" alt=""></p>
             </Col>
             <Col span="4">
             <p class=" ml20 vc">
@@ -76,6 +76,12 @@
     >
       <p>
       <Form :model="formItem" :label-width="80">
+      <FormItem label="标志" class="upload">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{uuid:formItem.uuid,type:7}" >
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.uuid+'&type=7'" alt="">
+      </FormItem>
         <FormItem label="标题">
           <Input v-model="formItem.title" placeholder="请输入标题"></Input>
         </FormItem>
@@ -102,6 +108,11 @@
     >
       <p>
       <Form :model="insertList" :label-width="80">
+      <FormItem label="标志"  >
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:7}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
         <FormItem label="标题">
           <Input v-model="insertList.title" placeholder="请输入标题"></Input>
         </FormItem>
@@ -151,6 +162,9 @@
         this.loadData();
     },
     methods: {
+      uploadSucc(res,file,fileList){
+        this.insertList.imgid=res.data.imgid;
+      },
       openUpdate(item){
           this.modal1=true;
        this.formItem={

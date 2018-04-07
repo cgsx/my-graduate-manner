@@ -12,7 +12,7 @@ import promise from 'es6-promise'
 promise.polyfill();//axios兼容ie
 import axios from 'axios'
 Vue.prototype.$http = axios;
-
+import  store from './assets/common/store'
 Vue.use(iView);
 Vue.config.productionTip = false;
 
@@ -89,6 +89,7 @@ Vue.filter('trunc', function(value,num) {
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 });

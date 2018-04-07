@@ -114,24 +114,33 @@
         <FormItem label="方案描述" v-if="formItem.pro_in==null">
           <Input v-model="formItem.des" type="textarea" placeholder="请输入产品描述"></Input>
         </FormItem>
+      <FormItem label="标志"  v-if="formItem.pro_in==null">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php?uuid='+formItem.id+'&type=13'">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.id+'&type=13'" alt="">
+      </FormItem>
         <FormItem label="标题" v-if="formItem.pro_in=='gs'||formItem.pro_in=='bj'">
           <Input v-model="formItem.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
         <FormItem label="详细" v-if="formItem.pro_in=='gs'||formItem.pro_in=='bj'">
           <Input v-model="formItem.detail" type="textarea" placeholder="请输入详情" ></Input>
         </FormItem>
-      <FormItem label="标志"  v-if="formItem.pro_in=='gs'">
-        <Upload action="">
-          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
-        </Upload>
-      </FormItem>
+
         <FormItem label="标题" v-if="formItem.pro_in=='ys'||formItem.pro_in=='cj'">
           <Input v-model="formItem.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
-      <FormItem label="标志"  v-if="formItem.pro_in=='cj'||formItem.pro_in=='ys'">
-        <Upload action="">
+      <FormItem label="标志"  v-if="formItem.pro_in=='gs'" class="upload">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php?uuid='+formItem.id+'&type=4'">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
+        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.id+'&type=4'" alt="">
+      </FormItem>
+      <FormItem label="标志"  v-if="formItem.pro_in=='ys'" class="upload">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php?uuid='+formItem.id+'&type=5'">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.id+'&type=5'" alt="">
       </FormItem>
         <FormItem label="副标题"v-if="formItem.pro_in=='ys'||formItem.pro_in=='cj'">
           <Input v-model="formItem.detailtitle" type="text" placeholder="请输入副标题" ></Input>
@@ -161,25 +170,31 @@
         <FormItem label="方案描述" v-if="insertList.pro_in==''">
           <Input v-model="insertList.des" type="textarea" placeholder="请输入产品描述"></Input>
         </FormItem>
+      <FormItem label="标志"  v-if="insertList.pro_in==''">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:13}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
         <FormItem label="标题" v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
           <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
         <FormItem label="详细" v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
           <Input v-model="insertList.detail" type="textarea" placeholder="请输入详情" ></Input>
         </FormItem>
-        <FormItem label="标志"  v-if="insertList.pro_in=='gs'">
-          <Upload action="">
-            <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
-          </Upload>
-        </FormItem>
+      <FormItem label="标志"  v-if="insertList.pro_in=='gs'">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:4}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
+      <FormItem label="标志"  v-if="insertList.pro_in=='ys'">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:5}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
         <FormItem label="标题" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
           <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
-        <FormItem label="标志"  v-if="insertList.pro_in=='cj'||insertList.pro_in=='ys'">
-          <Upload action="">
-            <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
-          </Upload>
-        </FormItem>
+
         <FormItem label="副标题"v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
           <Input v-model="insertList.detailtitle" type="text" placeholder="请输入副标题" ></Input>
         </FormItem>
@@ -209,7 +224,7 @@
         advertName: '',//搜索框名字
         group:'银行',
         formItem:{
-          uuid:'',
+
           name:'',
           des:'',
           group:'',
@@ -229,6 +244,9 @@
 
     },
     methods: {
+      uploadSucc(res,file,fileList){
+        this.insertList.imgid=res.data.imgid;
+      },
       delPro(item){
         var self=this;
         self.$Modal.confirm({title:'删除','content':"是否确认删除？删除之后产品不可恢复哦",okText:'确定删除',cancelText:'取消',onOk(){
@@ -425,5 +443,9 @@
   }
   .titlesActive{
     color: #00c1de;
+  }
+  .upload img{
+    width:100%;
+    height: 200px;
   }
 </style>

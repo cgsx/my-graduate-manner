@@ -17,8 +17,7 @@
           <Row class="apiManage_two code-row-bg" type="flex" justify="center" align="middle" v-for="item in advertList" :key="item.uuid">
             <Col span="2">
             <span class="ciclr ">
-                       <img  :src="'cnct_im/common/showImage?fileId='+item.upLoadId" v-show="item.upLoadId!=null">
-            <img src="../../assets/image/yzmpic.jpg" alt="" v-show="item.upLoadId==null">
+                  <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+item.uuid+'&type=11'" alt="">
             </span>
             </Col>
             <Col span="17">
@@ -48,6 +47,12 @@
     >
       <p>
       <Form :model="formItem" :label-width="80">
+      <FormItem label="标志" class="upload">
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{uuid:formItem.uuid,type:11}" >
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+        <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.uuid+'&type=11'" alt="">
+      </FormItem>
         <FormItem label="标题"  >
           <Input v-model="formItem.title" placeholder="请输入标题" ></Input>
         </FormItem>
@@ -65,10 +70,15 @@
     <Modal
       v-model="modal3"
 
-      title="修改"
+      title="新增"
     >
       <p>
       <Form :model="insertList" :label-width="80">
+      <FormItem label="标志"  >
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:11}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
       <FormItem label="标题"  >
         <Input v-model="insertList.title" placeholder="请输入标题" ></Input>
       </FormItem>
@@ -102,6 +112,9 @@
         this.loadCompany();
     },
     methods: {
+      uploadSucc(res,file,fileList){
+        this.insertList.imgid=res.data.imgid;
+      },
       openUpdate(item){
 var self=this;
 self.modal1=true;

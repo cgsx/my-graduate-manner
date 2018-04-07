@@ -71,6 +71,12 @@
     >
       <p>
       <Form :model="formItem" :label-width="80">
+      <FormItem label="标志" class="upload">
+      <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{uuid:formItem.uuid,type:6}" >
+        <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+      </Upload>
+      <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.uuid+'&type=6'" alt="">
+    </FormItem>
         <FormItem label="标题">
           <Input v-model="formItem.name" placeholder="请输入标题"></Input>
         </FormItem>
@@ -103,6 +109,11 @@
     >
       <p>
       <Form :model="insertList" :label-width="80">
+      <FormItem label="标志"  >
+        <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:6}" :on-success="uploadSucc">
+          <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+        </Upload>
+      </FormItem>
         <FormItem label="标题">
           <Input v-model="insertList.name" placeholder="请输入标题"></Input>
         </FormItem>
@@ -142,7 +153,7 @@
         proInList:[],
         groupList:[{name:'行业智能决策产品',active:true,uid:1},{name:'智能认知产品',active:false,uid:2},{name:'大数据操作系统',active:false,uid:3}],//分组列表
         advertName: '',//搜索框名字
-        group:'公共事务',
+        group:'',
         formItem:{
             uuid:'',
           name:'',
@@ -163,9 +174,12 @@
     },
     mounted(){
       this.loadPro();
-      this.loadOne();
+
     },
     methods: {
+      uploadSucc(res,file,fileList){
+        this.insertList.imgid=res.data.imgid;
+      },
       openUpdate(item){
           var self=this;
         self.modal1=true;
@@ -188,7 +202,7 @@
           }
           self.modal1=false;
           self.loadPro();
-          self.loadOne();
+
 
         })
       },
@@ -201,7 +215,7 @@
           }
           self.modal3=false;
           self.loadPro();
-          self.loadOne();
+
 
         })
       },
@@ -215,7 +229,7 @@
             }
             self.$Message.info(m.data.msg);
             self.loadPro();
-            self.loadOne();
+
 
           }).catch(function () {
             self.$Message.info("请求失败！");
@@ -276,6 +290,8 @@
             self.groupList.push({name:key,active:false});
           }
           self.groupList[0].active=true;
+          self.group= self.groupList[0].name;
+          self.loadOne();
 //        self.proInList=self.proList.行业智能决策产品;
 
 
@@ -297,4 +313,5 @@
   .titlesActive{
     color: #00c1de;
   }
+
 </style>
