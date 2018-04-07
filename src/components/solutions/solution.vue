@@ -110,7 +110,6 @@
         <FormItem label="方案名称"  v-if="formItem.pro_in==null">
           <Input v-model="formItem.group" placeholder="请输入产品名称" ></Input>
         </FormItem>
-
         <FormItem label="方案描述" v-if="formItem.pro_in==null">
           <Input v-model="formItem.des" type="textarea" placeholder="请输入产品描述"></Input>
         </FormItem>
@@ -142,7 +141,7 @@
         </Upload>
         <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.id+'&type=5'" alt="">
       </FormItem>
-        <FormItem label="副标题"v-if="formItem.pro_in=='ys'||formItem.pro_in=='cj'">
+        <FormItem label="副标题" v-if="formItem.pro_in=='ys'||formItem.pro_in=='cj'">
           <Input v-model="formItem.detailtitle" type="text" placeholder="请输入副标题" ></Input>
         </FormItem>
         <FormItem label="详细内容" v-if="formItem.pro_in=='ys'||formItem.pro_in=='cj'">
@@ -162,12 +161,12 @@
       title="添加"
     >
       <p>
-      <Form :model="insertList" :label-width="80">
-        <FormItem label="方案名称"  v-if="insertList.pro_in==''">
-          <Input v-model="insertList.group" placeholder="请输入产品名称" ></Input>
+      <Form :model="insertList" ref="insertList" :rules="insertvalidata" :label-width="80">
+        <FormItem label="方案名称"  prop="group" v-if="insertList.pro_in==''">
+          <Input v-model="insertList.group"  placeholder="请输入产品名称" ></Input>
         </FormItem>
 
-        <FormItem label="方案描述" v-if="insertList.pro_in==''">
+        <FormItem label="方案描述" prop="des" v-if="insertList.pro_in==''">
           <Input v-model="insertList.des" type="textarea" placeholder="请输入产品描述"></Input>
         </FormItem>
       <FormItem label="标志"  v-if="insertList.pro_in==''">
@@ -175,13 +174,13 @@
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="标题" v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
+        <FormItem label="标题" prop="title" v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
           <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
-        <FormItem label="详细" v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
+        <FormItem label="详细" prop="detail"  v-if="insertList.pro_in=='gs'||insertList.pro_in=='bj'">
           <Input v-model="insertList.detail" type="textarea" placeholder="请输入详情" ></Input>
         </FormItem>
-      <FormItem label="标志"  v-if="insertList.pro_in=='gs'">
+      <FormItem label="标志"   v-if="insertList.pro_in=='gs'">
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:4}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
@@ -191,14 +190,14 @@
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="标题" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
+        <FormItem label="标题" prop="title" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
           <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
         </FormItem>
 
-        <FormItem label="副标题"v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
+        <FormItem label="副标题" prop="detailtitle" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
           <Input v-model="insertList.detailtitle" type="text" placeholder="请输入副标题" ></Input>
         </FormItem>
-        <FormItem label="详细内容" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
+        <FormItem label="详细内容" prop="detail" v-if="insertList.pro_in=='ys'||insertList.pro_in=='cj'">
           <Input v-model="insertList.detail" type="text" placeholder="请输入详细内容" ></Input>
         </FormItem>
       </Form>
@@ -236,6 +235,14 @@
           des:'',
           group:'',
           pro_in:''
+        },
+        insertvalidata:{
+          name:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+          title:[{required:true,message:'不能为空'}],
+          detail:[{required:true,message:'不能为空'}],
+          detailtitle:[{required:true,message:'不能为空'}],
+          group:[{required:true,message:'不能为空'}],
         }
       }
     },
@@ -402,7 +409,10 @@
 //      添加产品信息
       insertPro(){
         var self=this;
-        console.log(self.insertList);
+        this.$refs.insertList.validate((valid) => {
+          if (valid) {
+
+            if(self.insertList.imgid!=null){
         self.$http.post("mg_solution/mg_solution_insert.php",self.insertList).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);
@@ -413,6 +423,14 @@
           self.$Message.info(m.data.msg);
         }).catch(function () {
           self.$Message.info("请求失败！");
+        })
+            }else{
+              self.$Message.error("必须上传图片");
+            }
+
+          } else {
+            this.$Message.error('不通过!');
+          }
         })
       },
       //加载产品

@@ -70,30 +70,30 @@
       @on-visible-change="closeModal"
     >
       <p>
-      <Form :model="formItem" :label-width="80">
+      <Form ref="formItem" :rules="rulesOne" :model="formItem" :label-width="80">
       <FormItem label="标志" class="upload">
       <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{uuid:formItem.uuid,type:6}" >
         <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
       </Upload>
       <img :src="$store.state.imgcon+'/conmon/showImg.php?uuid='+formItem.uuid+'&type=6'" alt="">
     </FormItem>
-        <FormItem label="标题">
-          <Input v-model="formItem.name" placeholder="请输入标题"></Input>
+        <FormItem  label="标题" prop="name">
+          <Input v-model="formItem.name"  placeholder="请输入标题"></Input>
         </FormItem>
-        <FormItem label="描述">
+        <FormItem label="描述" prop="des" >
           <Input v-model="formItem.des" placeholder="请输入简短的描述"></Input>
         </FormItem>
-      <FormItem label="项目背景">
+      <FormItem label="项目背景"  prop="backdetail">
           <Input v-model="formItem.backdetail" placeholder="请输入项目背景"></Input>
         </FormItem>
-      <FormItem label="解决方案">
-          <Input v-model="formItem.examdetail" placeholder="请输入解决方案"></Input>
+      <FormItem label="解决方案 " prop="examdetail">
+          <Input v-model="formItem.examdetail"  placeholder="请输入解决方案"></Input>
         </FormItem>
-      <FormItem label="客户收益">
+      <FormItem label="客户收益"  prop="get">
           <Input v-model="formItem.get" placeholder="请输入客户收益"></Input>
         </FormItem>
-      <FormItem label="分组">
-          <Input v-model="formItem.group" placeholder="请输入分组"></Input>
+      <FormItem label="分组" prop="group">
+          <Input v-model="formItem.group"  placeholder="请输入分组"></Input>
         </FormItem>
       </Form>
       </p>
@@ -108,28 +108,28 @@
       @on-visible-change="closeModal"
     >
       <p>
-      <Form :model="insertList" :label-width="80">
+      <Form ref="insertList" :model="insertList" :rules="rulesTwo" :label-width="80">
       <FormItem label="标志"  >
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:6}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="标题">
+        <FormItem label="标题" prop="name">
           <Input v-model="insertList.name" placeholder="请输入标题"></Input>
         </FormItem>
-        <FormItem label="描述">
+        <FormItem label="描述" prop="des">
           <Input v-model="insertList.des" placeholder="请输入简短的描述"></Input>
         </FormItem>
-        <FormItem label="项目背景">
+        <FormItem label="项目背景" prop="backdetail">
           <Input v-model="insertList.backdetail" placeholder="请输入项目背景"></Input>
         </FormItem>
-        <FormItem label="解决方案">
+        <FormItem label="解决方案" prop="examdetail">
           <Input v-model="insertList.examdetail" placeholder="请输入解决方案"></Input>
         </FormItem>
-        <FormItem label="客户收益">
+        <FormItem label="客户收益" prop="get">
           <Input v-model="insertList.get" placeholder="请输入客户收益"></Input>
         </FormItem>
-        <FormItem label="分组">
+        <FormItem label="分组" prop="group">
           <Input v-model="insertList.group" placeholder="请输入分组"></Input>
         </FormItem>
       </Form>
@@ -154,14 +154,8 @@
         groupList:[{name:'行业智能决策产品',active:true,uid:1},{name:'智能认知产品',active:false,uid:2},{name:'大数据操作系统',active:false,uid:3}],//分组列表
         advertName: '',//搜索框名字
         group:'',
+
         formItem:{
-            uuid:'',
-          name:'',
-          des:'',
-          backdetail:'',
-          examdetail:'',
-          get:''
-        } , insertList:{
             uuid:'',
           name:'',
           des:'',
@@ -169,7 +163,32 @@
           examdetail:'',
           get:'',
           group:''
-        }
+        } ,
+        rulesOne:{
+          name:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+          backdetail:[{required:true,message:'不能为空'}],
+          examdetail:[{required:true,message:'不能为空'}],
+          get:[{required:true,message:'不能为空'}],
+          group:[{required:true,message:'不能为空'}],
+        },
+        insertList:{
+            uuid:'',
+          name:'',
+          des:'',
+          backdetail:'',
+          examdetail:'',
+          get:'',
+          group:''
+        },
+        rulesTwo:{
+        name:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+          backdetail:[{required:true,message:'不能为空'}],
+          examdetail:[{required:true,message:'不能为空'}],
+          get:[{required:true,message:'不能为空'}],
+          group:[{required:true,message:'不能为空'}],
+      },
       }
     },
     mounted(){
@@ -195,29 +214,47 @@
       },
       updateOne(){
         var self=this;
-        self.$http.post("mg_exam/exam_update.php",self.formItem).then((m)=>{
-          if(m.data.code!=100){
-            self.$Message.info(m.data.msg);
-            return false;
+        self.$refs.formItem.validate((valid) => {
+          if (valid) {
+            self.$http.post("mg_exam/exam_update.php",self.formItem).then((m)=>{
+              if(m.data.code!=100){
+                self.$Message.info(m.data.msg);
+                return false;
+              }
+              self.modal1=false;
+              self.loadPro();
+
+
+            })
+          } else {
+            self.$Message.error("不能更改");
           }
-          self.modal1=false;
-          self.loadPro();
-
-
         })
+
       },
       insertOne(){
         var self=this;
-        self.$http.post("mg_exam/exam_insert.php",self.insertList).then((m)=>{
-          if(m.data.code!=100){
-            self.$Message.info(m.data.msg);
-            return false;
+        self.$refs.insertList.validate((valid) => {
+          if (valid) {
+              if(self.insertList.imgid!=null){
+                self.$http.post("mg_exam/exam_insert.php",self.insertList).then((m)=>{
+                  if(m.data.code!=100){
+                    self.$Message.info(m.data.msg);
+                    return false;
+                  }
+                  self.modal3=false;
+                  self.loadPro();
+                })
+                self.$Message.error("通过");
+              } else {
+                self.$Message.error("必须添加图片！");
+              }
+              }else{
+              self.$Message.info("不通过");
           }
-          self.modal3=false;
-          self.loadPro();
 
 
-        })
+      })
       },
       delOne(item){
         var self=this;

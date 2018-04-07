@@ -73,16 +73,16 @@
       title="新增"
     >
       <p>
-      <Form :model="insertList" :label-width="80">
+      <Form ref="insertList" :model="insertList" :rules="rulesTwo" :label-width="80">
       <FormItem label="标志"  >
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:11}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-      <FormItem label="标题"  >
+      <FormItem label="标题"  prop="title">
         <Input v-model="insertList.title" placeholder="请输入标题" ></Input>
       </FormItem>
-      <FormItem label="描述">
+      <FormItem label="描述" prop="des">
         <Input v-model="insertList.des" type="textarea" placeholder="请输入描述" ></Input>
       </FormItem>
       </Form>
@@ -104,7 +104,11 @@
         modal3:false,
         advertList: [],//广告列表列表
         formItem:{},
-        insertList:{}
+        insertList:{} ,rulesTwo:{
+          title:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+
+        },
       }
     },
 
@@ -156,6 +160,9 @@ self.modal1=true;
       },
       insertTeam(){
         var self=this;
+        self.$refs.insertList.validate((valid) => {
+          if (valid) {
+            if(self.insertList.imgid!=null){
         self.$http.post("mg_trends/mg_trends_insert.php",self.insertList).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);
@@ -164,7 +171,15 @@ self.modal1=true;
           self.$Message.info(m.data.msg);
           self.modal3=false;
           self.loadCompany();
-        })
+        })  } else {
+        self.$Message.error("必须添加图片！");
+  }
+  }else{
+    self.$Message.info("不通过");
+  }
+
+
+  })
       },
       openInsert(){
         var self=this;

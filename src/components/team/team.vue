@@ -102,22 +102,22 @@
       title="新增"
     >
       <p>
-      <Form :model="insertList" :label-width="80">
+      <Form ref="insertList" :model="insertList" :rules="rulesTwo"  :label-width="80">
       <FormItem label="标志"  >
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:10}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="姓名"  >
+        <FormItem label="姓名" prop="name" >
           <Input v-model="insertList.name" placeholder="请输入姓名" ></Input>
         </FormItem>
-        <FormItem label="职务">
+        <FormItem label="职务" prop="dept" >
           <Input v-model="insertList.dept" type="textarea" placeholder="请输入职务" ></Input>
         </FormItem>
-        <FormItem label="教育背景">
+        <FormItem label="教育背景" prop="backdetail" >
           <Input v-model="insertList.backdetail"type="textarea" placeholder="请输入教育背景" ></Input>
         </FormItem>
-        <FormItem label="工作经历">
+        <FormItem label="工作经历" prop="workdes" >
           <Input v-model="insertList.workdes" type="textarea" placeholder="请输入工作经历，每一条经历用逗号 隔开" ></Input>
         </FormItem>
 
@@ -142,6 +142,12 @@
         advertList:[],//广告列表列表
         formItem:{},
         insertList:{}
+        ,rulesTwo:{
+          name:[{required:true,message:'不能为空'}],
+          dept:[{required:true,message:'不能为空'}],
+          backdetail:[{required:true,message:'不能为空'}],
+          workdes:[{required:true,message:'不能为空'}],
+        },
       }
     },
     mounted(){
@@ -199,6 +205,9 @@
       },
       insertTeam(){
         var self=this;
+        self.$refs.insertList.validate((valid) => {
+          if (valid) {
+            if(self.insertList.imgid!=null){
         self.$http.post("mg_manner/mg_manner_insert.php",self.insertList).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);
@@ -207,6 +216,14 @@
           self.$Message.info(m.data.msg);
           self.modal3=false;
           self.loadCompany();
+        })   } else {
+              self.$Message.error("必须添加图片！");
+            }
+          }else{
+            self.$Message.info("不通过");
+          }
+
+
         })
       },
       openInsert(){

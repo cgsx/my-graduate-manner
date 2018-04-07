@@ -107,22 +107,22 @@
       @on-visible-change="closeModal"
     >
       <p>
-      <Form :model="insertList" :label-width="80">
+      <Form ref="insertList" :model="insertList" :rules="rulesTwo" :label-width="80">
       <FormItem label="标志"  >
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:7}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="标题">
+        <FormItem label="标题" prop="title">
           <Input v-model="insertList.title" placeholder="请输入标题"></Input>
         </FormItem>
-        <FormItem label="描述">
+        <FormItem label="描述" prop="des">
           <Input v-model="insertList.des"  type="textarea" placeholder="请输入描述"></Input>
         </FormItem>
-        <FormItem label="数据来源">
+        <FormItem label="数据来源" prop="datacata">
           <Input v-model="insertList.datacata"  type="textarea" placeholder="请输入数据来源"></Input>
         </FormItem>
-        <FormItem label="目录">
+        <FormItem label="目录" prop="datastudy">
           <Input v-model="insertList.datastudy"  type="textarea" placeholder="目录"></Input>
         </FormItem>
       </Form>
@@ -154,7 +154,12 @@
           des:'',
           datacata:'',
           datastudy:'',
-        }
+        } ,rulesTwo:{
+          title:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+          datacata:[{required:true,message:'不能为空'}],
+          datastudy:[{required:true,message:'不能为空'}],
+        },
       }
     },
 
@@ -189,6 +194,9 @@ self.modal1=false;
       },
       insertOne(){
         var self=this;
+        self.$refs.insertList.validate((valid) => {
+          if (valid) {
+            if(self.insertList.imgid!=null){
         self.$http.post("mg_data/mg_data_insert.php",self.insertList).then((m)=>{
           if(m.data.code!=100){
             self.$Message.info(m.data.msg);
@@ -198,6 +206,14 @@ self.modal1=false;
 
           self.modal3=false;
     self.loadData();
+
+        })     } else {
+              self.$Message.error("必须添加图片！");
+            }
+          }else{
+            self.$Message.info("不通过");
+          }
+
 
         })
       },

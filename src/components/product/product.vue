@@ -164,29 +164,29 @@
       title="添加"
     >
       <p>
-      <Form :model="formItem" :label-width="80">
-        <FormItem label="产品名称"  v-if="insertList.pro_in==''">
+      <Form :model="insertList" ref="insertList" :rules="insertvalidata" :label-width="80">
+        <FormItem label="产品名称" prop="name"  v-if="insertList.pro_in==''">
           <Input v-model="insertList.name" placeholder="请输入产品名称" ></Input>
         </FormItem>
-        <FormItem label="产品描述" v-if="insertList.pro_in==''">
+        <FormItem label="产品描述"  prop="des" v-if="insertList.pro_in==''">
           <Input v-model="insertList.des" type="textarea" placeholder="请输入产品描述"></Input>
         </FormItem>
-        <FormItem label="分组" v-if="insertList.pro_in==''">
+        <FormItem label="分组"  prop="group" v-if="insertList.pro_in==''">
           <Input v-model="insertList.group" type="text" placeholder="请输入分组"></Input>
         </FormItem>
-      <FormItem label="标志"  v-if="insertList.pro_in==''">
+      <FormItem label="标志"   v-if="insertList.pro_in==''">
         <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:14}" :on-success="uploadSucc">
           <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
         </Upload>
       </FormItem>
-        <FormItem label="标题" v-if="insertList.pro_in=='产品概述'">
-          <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
+        <FormItem label="标题"  prop="title" v-if="insertList.pro_in=='产品概述'">
+          <Input v-model="insertList.title" type="text" placeholder="请输入标题" disabled></Input>
         </FormItem>
-        <FormItem label="产品概述" v-if="insertList.pro_in=='产品概述'">
+        <FormItem label="产品概述"  prop="detail" v-if="insertList.pro_in=='产品概述'">
           <Input v-model="insertList.detail" type="textarea" placeholder="请输入产品概述" ></Input>
         </FormItem>
-        <FormItem label="标题" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
-          <Input v-model="insertList.title" type="text" placeholder="请输入标题" ></Input>
+        <FormItem label="标题"  prop="title" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+          <Input v-model="insertList.title" type="text" placeholder="请输入标题" disabled></Input>
         </FormItem>
         <FormItem label="标志"  v-if="insertList.pro_in=='产品功能'">
           <Upload :action="$store.state.imgcon+'/conmon/uploadFile.php'" :data="{type:2}" :on-success="uploadSucc">
@@ -198,10 +198,10 @@
             <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
           </Upload>
         </FormItem>
-        <FormItem label="副标题" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+        <FormItem label="副标题"  prop="detailtitle" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
           <Input v-model="insertList.detailtitle" type="text" placeholder="请输入副标题" ></Input>
         </FormItem>
-        <FormItem label="详细内容" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
+        <FormItem label="详细内容"  prop="detail" v-if="insertList.pro_in=='产品功能'||insertList.pro_in=='产品优势'||insertList.pro_in=='应用场景'">
           <Input v-model="insertList.detail" type="text" placeholder="请输入详细内容" ></Input>
         </FormItem>
       </Form>
@@ -240,6 +240,16 @@
           des:'',
           group:'',
           pro_in:''
+        },
+        insertvalidata:{
+          name:[{required:true,message:'不能为空'}],
+          des:[{required:true,message:'不能为空'}],
+          title:[{required:true,message:'不能为空'}],
+          detail:[{required:true,message:'不能为空'}],
+
+          detailtitle:[{required:true,message:'不能为空'}],
+
+          group:[{required:true,message:'不能为空'}],
         }
       }
     },
@@ -273,6 +283,7 @@
       openUpdateGn(item){
         var self=this;
         self.formItem.pro_in='产品功能';
+
         self.modal1=true;
         self.formItem={
           title:item.title,
@@ -322,24 +333,28 @@
       openInsertGs(uuid){
           var self=this;
           self.insertList.pro_in='产品概述';
+        self.insertList.title='产品概述';
 self.insertList.uuid=uuid;
         self.modal3=true;
       },
       openInsertGn(uuid){
           var self=this;
           self.insertList.pro_in='产品功能';
+        self.insertList.title='产品功能';
         self.modal3=true;
 self.insertList.uuid=uuid;
       },
       openInsertCj(uuid){
           var self=this;
           self.insertList.pro_in='应用场景';
+        self.insertList.title='应用场景';
         self.modal3=true;
 self.insertList.uuid=uuid;
       },
       openInsertYs(uuid){
           var self=this;
           self.insertList.pro_in='产品优势';
+        self.insertList.title='产品优势';
         self.modal3=true;
 self.insertList.uuid=uuid;
       },
@@ -347,6 +362,7 @@ self.insertList.uuid=uuid;
       closeModal(flag){
 
           var self=this;
+
           if(!flag){
             self.insertList.name='';
             self.insertList.des='';
@@ -354,6 +370,7 @@ self.insertList.uuid=uuid;
             self.insertList.title='';
             self.insertList.detailtitle='';
             self.insertList.detail='';
+
           }
 
 
@@ -406,18 +423,31 @@ self.insertList.uuid=uuid;
 //      添加产品信息
       insertPro(){
           var self=this;
-        self.$http.post("mg_pro/mg_pro_insert.php",self.insertList).then((m)=>{
-          if(m.data.code!=100){
-            self.$Message.info(m.data.msg);
-            return false;
+        this.$refs.insertList.validate((valid) => {
+          if (valid) {
+
+            if(self.insertList.imgid!=null){
+              self.$http.post("mg_pro/mg_pro_insert.php",self.insertList).then((m)=>{
+                if(m.data.code!=100){
+                  self.$Message.info(m.data.msg);
+                  return false;
+                }
+                self.modal3=false;
+                self.loadPro();
+                self.loadGroup();
+                self.$Message.info(m.data.msg);
+              }).catch(function () {
+                self.$Message.info("请求失败！");
+              })
+            }else{
+                self.$Message.error("必须上传图片");
+            }
+
+          } else {
+            this.$Message.error('不通过!');
           }
-          self.modal3=false;
-          self.loadPro();
-          self.loadGroup();
-          self.$Message.info(m.data.msg);
-        }).catch(function () {
-          self.$Message.info("请求失败！");
         })
+
       },
       //加载产品
   loadPro(){
